@@ -3,8 +3,15 @@
    * Based on VisualStudio 2015 sp3
    * Based on Qt 5.9.1
    * OpenGL2, OpenGL support
-   * include vtkDICOM module
+   * include vtkDICOM submodule
 
+### How do I get this ###
+	* clone
+		* $ git clone git@github.com:medipixel/VTK-8.git
+	* clone submodules
+	    * this module have submodules
+		* $ git submodule update --init --recursive
+      
 ### How to buid it ###
 * Required
    * VisualStudio 2015
