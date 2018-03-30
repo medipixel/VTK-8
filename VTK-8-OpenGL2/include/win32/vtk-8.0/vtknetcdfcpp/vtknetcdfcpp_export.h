@@ -39,4 +39,4 @@
 #  endif
 #endif
 
-#endif
+#endif /* VTKNETCDFCPP_EXPORT_H */

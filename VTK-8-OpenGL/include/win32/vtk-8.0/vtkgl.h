@@ -2,7 +2,7 @@
 
 //DO NOT EDIT!
 //This file was created with ..\..\bin\Debug\vtkParseOGLExt-8.0.exe
-//from C:/libs/vtk/VTK-8/VTK-8/build.x86.gl/Rendering/OpenGL C:/libs/vtk/VTK-8/VTK-8/source/Utilities/ParseOGLExt/headers/glext.h C:/libs/vtk/VTK-8/VTK-8/source/Utilities/ParseOGLExt/headers/glxext.h C:/libs/vtk/VTK-8/VTK-8/source/Utilities/ParseOGLExt/headers/wglext.h
+//from C:/libs/vtk/VTK-8/VTK-8.0.1/build.x86.gl/Rendering/OpenGL C:/libs/vtk/VTK-8/VTK-8.0.1/source/Utilities/ParseOGLExt/headers/glext.h C:/libs/vtk/VTK-8/VTK-8.0.1/source/Utilities/ParseOGLExt/headers/glxext.h C:/libs/vtk/VTK-8/VTK-8.0.1/source/Utilities/ParseOGLExt/headers/wglext.h
 
 /*
  * Copyright 2003 Sandia Corporation.

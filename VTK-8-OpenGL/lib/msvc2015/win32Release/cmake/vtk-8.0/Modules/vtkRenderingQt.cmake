@@ -8,7 +8,7 @@ set(vtkRenderingQt_WRAP_HIERARCHY_FILE "${CMAKE_CURRENT_LIST_DIR}/vtkRenderingQt
 set(vtkRenderingQt_KIT "")
 
 if(NOT Qt5_DIR)
-  set(Qt5_DIR "C:/Qt/5.9.1/msvc2015/lib/cmake/Qt5")
+  set(Qt5_DIR "C:/Qt/5.10.1/msvc2015/lib/cmake/Qt5")
 endif()
 find_package(Qt5 REQUIRED QUIET COMPONENTS Widgets)
 
