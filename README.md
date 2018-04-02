@@ -1,7 +1,7 @@
 ### About this ###
 * Built binrary files
    * Based on VisualStudio 2015 sp3
-   * Based on Qt 5.9.1
+   * Based on Qt 5.10.1
    * OpenGL2, OpenGL support
    * include vtkDICOM submodule
 
@@ -15,8 +15,8 @@
 ### How to buid it ###
 * Required
    * VisualStudio 2015
-   * Qt 5.9.1
-   * CMake 3.9.1
+   * Qt 5.10.1
+   * CMake 3.11.0-rc4
    * Git for Windows 2.14.1
        * https://git-scm.com/download/win
        * requred in downloading vtkDICOM module.
@@ -27,7 +27,7 @@
        * http://www.vtk.org/Wiki/VTK/Configure_and_Build
    * download VTK source v8.0.1
        * source code path: VTK source code path
-   * CMake install, (v3.9.1)
+   * CMake install, (v3.11.0-rc4)
        * https://cmake.org/download/
        * CMake 'Add Entry' before 'Configure' (i.e: Visual Studio 2015 vc 14.0 x86, Qt 5.9)
            * VTK_RENDERING_BACKEND:STRING=OpenGL (if VTK.OpenGL project will use OpenGL, VTK.OpenGL2 project will use OpenGL2)
@@ -36,11 +36,11 @@
                   * VTK.OpenGL2, default value is OpenGL2
            * VTK_Group_Qt:BOOL=ON
                * Turn on Qt support
-           * QT_QMAKE_EXECUTABLE:FILEPATH=C:/Qt/Qt5.9.1/5.9.1/msvc2015/bin/qmake.exe (if x64 project, use this: C:/Qt/Qt5.9.1/5.9.1/msvc2015_64/bin/qmake.exe)
+           * QT_QMAKE_EXECUTABLE:FILEPATH=C:/Qt/Qt5.10.1/msvc2015/bin/qmake.exe (if x64 project, use this: C:/Qt/Qt5.10.1/msvc2015_64/bin/qmake.exe)
                * Set Qmake.exe file path
            * VTK_QT_VERSION:STRING=5
                * CMake wrong print Qt version 4
-           * Qt5_DIR:PATH=C:/Qt/Qt5.9.1/5.9.1/msvc2015/lib/cmake/Qt5 (if x64 project, use this: C:/Qt/Qt5.9.1/5.9.1/msvc2015_64/lib/cmake/Qt5)
+           * Qt5_DIR:PATH=C:/Qt/Qt5.10.1/msvc2015/lib/cmake/Qt5 (if x64 project, use this: C:/Qt/Qt5.10.1/msvc2015_64/lib/cmake/Qt5)
                * CMake need file path of Qt5Config.cmake.
            * Module_vtkDICOM:BOOL=ON
                * Will not use the dicom read module in VTK 8.0.
