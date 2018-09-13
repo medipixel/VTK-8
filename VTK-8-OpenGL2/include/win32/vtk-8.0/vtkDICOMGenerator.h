@@ -14,8 +14,8 @@
 #ifndef vtkDICOMGenerator_h
 #define vtkDICOMGenerator_h
 
-#include <vtkObject.h>
-#include <vtkStdString.h> // For std::string
+#include "vtkObject.h"
+#include "vtkStdString.h" // For std::string
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMTag.h" // For method parameter
 
@@ -123,6 +123,17 @@ public:
   vtkGetMacro(RescaleIntercept, double);
   vtkSetMacro(RescaleSlope, double);
   vtkGetMacro(RescaleSlope, double);
+  //@}
+
+  //@{
+  //! Set the number of overlays to generate.
+  /*!
+   *  This will cause overlay attributes to be copied from the source
+   *  meta data to the output meta data.  It is up to the writer to
+   *  ensure that the values are consistent with each other.
+   */
+  vtkSetMacro(NumberOfOverlays, int);
+  vtkGetMacro(NumberOfOverlays, int);
   //@}
 
   //@{
@@ -410,6 +421,9 @@ protected:
   double RescaleIntercept;
   double RescaleSlope;
 
+  //! The number of overlays to generate.
+  int NumberOfOverlays;
+
   //! The VTK scalar type of the data, set by InitializeMetaData().
   int ScalarType;
 
@@ -473,6 +487,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMGenerator(const vtkDICOMGenerator&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMGenerator&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMGenerator(const vtkDICOMGenerator&) = delete;
+  void operator=(const vtkDICOMGenerator&) = delete;
 #else
   vtkDICOMGenerator(const vtkDICOMGenerator&);
   void operator=(const vtkDICOMGenerator&);

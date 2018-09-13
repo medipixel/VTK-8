@@ -33,7 +33,7 @@
 #ifndef vtkNIFTIWriter_h
 #define vtkNIFTIWriter_h
 
-#include <vtkImageWriter.h>
+#include "vtkImageWriter.h"
 #include "vtkDICOMModule.h" // For export macro
 
 class vtkMatrix4x4;
@@ -145,7 +145,7 @@ public:
   /*!
    *  Unlike the qform matrix, the sform matrix can contain scaling
    *  information.  Before being stored in the NIFTI header, the
-   *  first three columns of the matrix will be multipled by the voxel
+   *  first three columns of the matrix will be multiplied by the voxel
    *  spacing. In the NIFTI header, the sform_code will be set to 2.
    */
   void SetSFormMatrix(vtkMatrix4x4 *);
@@ -242,6 +242,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkNIFTIWriter(const vtkNIFTIWriter&) VTK_DELETE_FUNCTION;
   void operator=(const vtkNIFTIWriter&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkNIFTIWriter(const vtkNIFTIWriter&) = delete;
+  void operator=(const vtkNIFTIWriter&) = delete;
 #else
   vtkNIFTIWriter(const vtkNIFTIWriter&);
   void operator=(const vtkNIFTIWriter&);

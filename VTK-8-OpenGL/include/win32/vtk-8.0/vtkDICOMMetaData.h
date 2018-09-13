@@ -14,8 +14,8 @@
 #ifndef vtkDICOMMetaData_h
 #define vtkDICOMMetaData_h
 
-#include <vtkDataObject.h>
-#include <vtkStdString.h> // For std::string
+#include "vtkDataObject.h"
+#include "vtkStdString.h" // For std::string
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMDataElement.h" // For method parameter
 #include "vtkDICOMDictEntry.h" // For method parameter
@@ -269,6 +269,8 @@ public:
    *  read DICOM Part 5 Section 7.8 for additional information.
    */
   vtkDICOMTag ResolvePrivateTag(vtkDICOMTag ptag, const std::string& creator);
+  vtkDICOMTag ResolvePrivateTag(
+    int idx, vtkDICOMTag ptag, const std::string& creator);
 
   //! Resolve a private tag, and add the creator to the data set.
   /*!
@@ -280,6 +282,8 @@ public:
    */
   vtkDICOMTag ResolvePrivateTagForWriting(
     vtkDICOMTag ptag, const std::string& creator);
+  vtkDICOMTag ResolvePrivateTagForWriting(
+    int idx, vtkDICOMTag ptag, const std::string& creator);
   //@}
 
   //@{
@@ -386,6 +390,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMMetaData(const vtkDICOMMetaData&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMMetaData&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMMetaData(const vtkDICOMMetaData&) = delete;
+  void operator=(const vtkDICOMMetaData&) = delete;
 #else
   vtkDICOMMetaData(const vtkDICOMMetaData&);
   void operator=(const vtkDICOMMetaData&);

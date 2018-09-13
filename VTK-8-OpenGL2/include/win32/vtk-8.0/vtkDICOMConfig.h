@@ -20,14 +20,15 @@
 /* #undef DICOM_BUILD_TESTING */
 /* #undef DICOM_USE_GDCM */
 /* #undef DICOM_USE_DCMTK */
+/* #undef DICOM_USE_SQLITE */
 #define DICOM_USE_VTKZLIB
 
 /* Version number. */
 #define DICOM_MAJOR_VERSION 0
 #define DICOM_MINOR_VERSION 8
-#define DICOM_PATCH_VERSION 1
+#define DICOM_PATCH_VERSION 7
 #define DICOM_SHORT_VERSION "0.8"
-#define DICOM_VERSION "0.8.1"
+#define DICOM_VERSION "0.8.7"
 
 /* Legacy (for backwards compatibility) */
 #define DICOM_BUILD_VERSION DICOM_PATCH_VERSION

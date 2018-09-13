@@ -14,14 +14,16 @@
 #ifndef vtkDICOMDirectory_h
 #define vtkDICOMDirectory_h
 
-#include <vtkAlgorithm.h>
+#include "vtkAlgorithm.h"
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMCharacterSet.h" // For character sets
+#include "vtkVersion.h"
 
 class vtkStringArray;
 class vtkIntArray;
 class vtkDICOMMetaData;
 class vtkDICOMItem;
+class vtkDICOMTag;
 
 //! Get information about all DICOM files within a directory.
 /*!
@@ -195,6 +197,24 @@ public:
   vtkDICOMMetaData *GetMetaDataForSeries(int i);
   //@}
 
+  //! Set when to query the files, rather than just the DICOMDIR index.
+  /*!
+   *  If a DICOMDIR file is present, the default behavior is to only
+   *  query the other files in the directory if the Query contains
+   *  elements that cannot be elucidated from the DICOMDIR file.
+   *  For Always, the data returned by GetMetaDataForSeries() will
+   *  always be data from the file, not the DICOMDIR (though the
+   *  data returned by GetSeriesRecord() etc. will be from DICOMDIR).
+   *  For Never, the files will never be scanned if a DICOMDIR is
+   *  present, which means that any Query that is applied can only
+   *  check attributes that are present in the DICOMDIR.
+   */
+  void SetQueryFilesToAlways() { this->SetQueryFiles(1); }
+  void SetQueryFilesToNever() { this->SetQueryFiles(0); }
+  void SetQueryFilesToDefault() { this->SetQueryFiles(-1); }
+  vtkSetMacro(QueryFiles, int);
+  int GetQueryFiles() { return this->QueryFiles; }
+
   //@{
   //! Get the file set ID.  This will be NULL unless a DICOMDIR was found.
   const char *GetFileSetID() { return this->FileSetID; }
@@ -249,7 +269,7 @@ public:
   //! Set the character set to use if SpecificCharacterSet is missing.
   /*!
    *  Some DICOM files do not list a SpecificCharacterSet attribute, but
-   *  neverthless use a non-ASCII character encoding.  This method can be
+   *  nevertheless use a non-ASCII character encoding.  This method can be
    *  used to specify the character set in absence of SpecificCharacterSet.
    *  If SpecificCharacterSet is present, the default will not override it
    *  unless OverrideCharacterSet is true.
@@ -277,6 +297,7 @@ protected:
   const char *DirectoryName;
   vtkStringArray *InputFileNames;
   const char *FilePattern;
+  int QueryFiles;
   int IgnoreDicomdir;
   int RequirePixelData;
   int FollowSymlinks;
@@ -292,7 +313,8 @@ protected:
   virtual void Execute();
 
   //! Fill image info from image metadata.
-  virtual void FillImageRecord(vtkDICOMItem *item, vtkDICOMMetaData *meta);
+  virtual void FillImageRecord(vtkDICOMItem *item, vtkDICOMMetaData *meta,
+                               const vtkDICOMTag *skip, size_t nskip);
 
   //! Fill series info from image metadata.
   virtual void FillSeriesRecord(vtkDICOMItem *item, vtkDICOMMetaData *meta);
@@ -384,6 +406,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMDirectory(const vtkDICOMDirectory&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMDirectory&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMDirectory(const vtkDICOMDirectory&) = delete;
+  void operator=(const vtkDICOMDirectory&) = delete;
 #else
   vtkDICOMDirectory(const vtkDICOMDirectory&);
   void operator=(const vtkDICOMDirectory&);

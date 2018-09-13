@@ -35,7 +35,7 @@
 #ifndef vtkNIFTIReader_h
 #define vtkNIFTIReader_h
 
-#include <vtkImageReader2.h>
+#include "vtkImageReader2.h"
 #include "vtkDICOMModule.h" // For export macro
 
 class vtkNIFTIHeader;
@@ -133,8 +133,8 @@ public:
   //@{
   //! QFac gives the slice order in the NIFTI file versus the VTK image.
   /*!
-   *  If QFac is -1, then the VTK slice index J is related to the NIFTI
-   *  slice index j by the equation J = (num_slices - j - 1).  VTK requires
+   *  If QFac is -1, then the VTK slice index K is related to the NIFTI
+   *  slice index k by the equation K = (num_slices - k - 1).  VTK requires
    *  the slices to be ordered so that the voxel indices (I,J,K) provide a
    *  right-handed coordinate system, whereas NIFTI does not.  Instead,
    *  NIFTI stores a factor called "qfac" in the header to signal when the
@@ -261,6 +261,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkNIFTIReader(const vtkNIFTIReader&) VTK_DELETE_FUNCTION;
   void operator=(const vtkNIFTIReader&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkNIFTIReader(const vtkNIFTIReader&) = delete;
+  void operator=(const vtkNIFTIReader&) = delete;
 #else
   vtkNIFTIReader(const vtkNIFTIReader&);
   void operator=(const vtkNIFTIReader&);

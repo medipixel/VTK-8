@@ -36,7 +36,7 @@
 #ifndef vtkNIFTIHeader_h
 #define vtkNIFTIHeader_h
 
-#include <vtkObject.h>
+#include "vtkObject.h"
 #include "vtkDICOMModule.h" // For export macro
 
 struct nifti_1_header;
@@ -416,6 +416,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkNIFTIHeader(const vtkNIFTIHeader&) VTK_DELETE_FUNCTION;
   void operator=(const vtkNIFTIHeader&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkNIFTIHeader(const vtkNIFTIHeader&) = delete;
+  void operator=(const vtkNIFTIHeader&) = delete;
 #else
   vtkNIFTIHeader(const vtkNIFTIHeader&);
   void operator=(const vtkNIFTIHeader&);

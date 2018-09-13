@@ -34,7 +34,7 @@
 #ifndef vtkScancoCTReader_h
 #define vtkScancoCTReader_h
 
-#include <vtkImageReader2.h>
+#include "vtkImageReader2.h"
 #include "vtkDICOMModule.h" // For export macro
 
 //----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ public:
   //! Get the number of samples.
   int GetNumberOfSamples() { return this->NumberOfSamples; }
 
-  //! Get the nubmer of projections.
+  //! Get the number of projections.
   int GetNumberOfProjections() { return this->NumberOfProjections; }
 
   //! Get the scan distance (in millimeters).
@@ -239,6 +239,12 @@ protected:
   //! Convert char data to float (single precision).
   static float DecodeFloat(const void *data);
 
+  //! Convert a string to a double precision value.
+  static double StringToDouble(const char *cp, char **cpp=0);
+
+  //! Convert a string to an int.
+  static int StringToInt(const char *cp, char **cpp=0);
+
   //! Convert char data to float (double precision).
   static double DecodeDouble(const void *data);
 
@@ -290,6 +296,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkScancoCTReader(const vtkScancoCTReader&) VTK_DELETE_FUNCTION;
   void operator=(const vtkScancoCTReader&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkScancoCTReader(const vtkScancoCTReader&) = delete;
+  void operator=(const vtkScancoCTReader&) = delete;
 #else
   vtkScancoCTReader(const vtkScancoCTReader&);
   void operator=(const vtkScancoCTReader&);

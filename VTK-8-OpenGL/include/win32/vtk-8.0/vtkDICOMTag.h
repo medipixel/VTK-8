@@ -14,7 +14,7 @@
 #ifndef vtkDICOMTag_h
 #define vtkDICOMTag_h
 
-#include <vtkSystemIncludes.h>
+#include "vtkSystemIncludes.h"
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMDictHash.h"
 
@@ -52,6 +52,10 @@ public:
   //@}
 
   //@{
+  //! Get the tag as a 32-bit key.
+  unsigned int GetKey() const {
+    return this->Key; }
+
   //! Compute a hash value, used for accelerating lookups.
   unsigned int ComputeHash() const {
     unsigned int h = (((this->Key >> 6) & 0x03FF03FF) ^ this->Key);

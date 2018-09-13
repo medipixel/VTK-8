@@ -14,7 +14,7 @@
 #ifndef vtkDICOMFile_h
 #define vtkDICOMFile_h
 
-#include <vtkSystemIncludes.h>
+#include "vtkSystemIncludes.h"
 #include "vtkDICOMModule.h" // For export macro
 
 #if defined(_WIN32)
@@ -79,7 +79,7 @@ public:
   //! Write data to a file.
   /*!
    *  The number of bytes written will be returned.
-   *  If it is less than the size requested, an error ocurred.
+   *  If it is less than the size requested, an error occurred.
    */
   size_t Write(const unsigned char *data, size_t size);
 

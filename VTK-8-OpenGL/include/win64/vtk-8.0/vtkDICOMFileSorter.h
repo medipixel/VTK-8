@@ -14,7 +14,7 @@
 #ifndef vtkDICOMFileSorter_h
 #define vtkDICOMFileSorter_h
 
-#include <vtkObject.h>
+#include "vtkObject.h"
 #include "vtkDICOMModule.h" // For export macro
 
 class vtkStringArray;
@@ -55,7 +55,7 @@ public:
   //! Set a list of file names to group and sort.
   /*!
    *  This method is mutually exclusive with SetInputFileName().
-   *  If you call ths method, then InputFileName will be set to NULL
+   *  If you call this method, then InputFileName will be set to NULL
    *  and vice versa.
    */
   void SetInputFileNames(vtkStringArray *input);
@@ -154,6 +154,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMFileSorter(const vtkDICOMFileSorter&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMFileSorter&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMFileSorter(const vtkDICOMFileSorter&) = delete;
+  void operator=(const vtkDICOMFileSorter&) = delete;
 #else
   vtkDICOMFileSorter(const vtkDICOMFileSorter&);
   void operator=(const vtkDICOMFileSorter&);

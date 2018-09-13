@@ -22,7 +22,7 @@
 #ifndef vtkDICOMReader_h
 #define vtkDICOMReader_h
 
-#include <vtkImageReader2.h>
+#include "vtkImageReader2.h"
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMCharacterSet.h" // For character sets
 
@@ -138,7 +138,7 @@ public:
   //! Set the character set to use if SpecificCharacterSet is missing.
   /*!
    *  Some DICOM files do not list a SpecificCharacterSet attribute, but
-   *  neverthless use a non-ASCII character encoding.  This method can be
+   *  nevertheless use a non-ASCII character encoding.  This method can be
    *  used to specify the character set in absence of SpecificCharacterSet.
    *  This method will not take effect unless is is called before the image
    *  is read.  If SpecificCharacterSet is present, the default will not
@@ -258,6 +258,26 @@ public:
   //@}
 
   //@{
+  //! Get the overlay.
+  /*!
+   *  The extent of the overlay will be the same as the main image.
+   *  For multiple overlays, each overlay will be stored in a different
+   *  bit. An 8-bit image will be used if there are eight or fewer
+   *  overlays, and an unsigned 16-bit image will be used if there are
+   *  more than eight overlays.
+   */
+  vtkImageData *GetOverlayOutput();
+  vtkAlgorithmOutput *GetOverlayOutputPort();
+  void SetOverlayOutput(vtkImageData *data);
+
+  //! Returns true if any overlays are present.
+  bool HasOverlay() { return (this->OverlayBitfield != 0); }
+
+  //! Returns a bitfield that indicates which overlays are present.
+  unsigned short GetOverlayBitfield() { return this->OverlayBitfield; }
+  //@}
+
+  //@{
   //! Get a MedicalImageProperties object for this file.
   vtkMedicalImageProperties *GetMedicalImageProperties();
   //@}
@@ -297,24 +317,46 @@ public:
   vtkGetMacro(OutputScalarType, int);
   //@}
 
+#ifndef __WRAP__
+  //@{
+  using Superclass::Update;
+  //! Update both the image and, if present, the overlay
+#ifdef VTK_OVERRIDE
+  void Update() VTK_OVERRIDE;
+#else
+  virtual void Update();
+#endif
+  //@}
+#endif
+
 protected:
   vtkDICOMReader();
   ~vtkDICOMReader();
 
 #ifdef VTK_OVERRIDE
   //@{
+  //! Entry point for all pipeline requests.
+  int ProcessRequest(
+    vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) VTK_OVERRIDE;
+
   //! Read the header information.
-  virtual int RequestInformation(
+  int RequestInformation(
     vtkInformation* request, vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) VTK_OVERRIDE;
 
   //! Read the voxel data.
-  virtual int RequestData(
+  int RequestData(
     vtkInformation* request, vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) VTK_OVERRIDE;
   //@}
 #else
   //@{
+  //! Entry point for all pipeline requests.
+  virtual int ProcessRequest(
+    vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
+
   //! Read the header information.
   virtual int RequestInformation(
     vtkInformation* request, vtkInformationVector** inputVector,
@@ -328,14 +370,32 @@ protected:
 #endif
 
   //@{
+  //! Read the overlays into an allocated vtkImageData object.
+  virtual bool ReadOverlays(vtkImageData *data);
+
+  //! Unpack overlay bits to build the overlay image.
+  void UnpackOverlay(
+    const void *filePtr, vtkIdType bitskip, vtkIdType count,
+    void *buffer, vtkIdType incr, int bit);
+  //@}
+
+  //@{
   //! Read one file.  Specify the offset to the PixelData.
   virtual bool ReadOneFile(
     const char *filename, int idx,
     unsigned char *buffer, vtkIdType bufferSize);
 
+  //! Clear or sign-extend any bits beyond BitsStored.
+  void MaskBits(void *buffer, vtkIdType bufferSize, int scalarSize,
+                int bitsStored, int pixelRepresentation);
+
   //! Unpack 1 bit to 8 bits or 12 bits to 16 bits.
   void UnpackBits(
     const void *source, void *buffer, vtkIdType bufferSize, int bits);
+
+  //! Unpack 4:2:2 color data.
+  void UnpackYBR422(
+    const void *source, void *buffer, vtkIdType bufferSize, vtkIdType rowlen);
 
   //! Read an DICOM file directly.
   virtual bool ReadFileNative(
@@ -461,10 +521,17 @@ protected:
   //! The stack to load.
   char DesiredStackID[20];
 
+  //! Bitfield that says what overlays are present.
+  unsigned short OverlayBitfield;
+  bool UpdateOverlayFlag;
+
 private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMReader(const vtkDICOMReader&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMReader&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMReader(const vtkDICOMReader&) = delete;
+  void operator=(const vtkDICOMReader&) = delete;
 #else
   vtkDICOMReader(const vtkDICOMReader&);
   void operator=(const vtkDICOMReader&);

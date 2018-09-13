@@ -19,9 +19,10 @@
  * pixel values to real-world values with known units.  It uses the DICOM
  * RealWorldValueMapping attributes, if present, otherwise it uses the
  * RescaleSlope and RescaleIntercept.  If no mapping information is present,
- * then the pixels are simply converted to floating-point.  Note that if
- * this filter is used, then AutoRescaleOff() should be set on the reader
- * to ensure that the reader does not rescale the data.
+ * then the pixels are simply converted to floating-point.
+ *
+ * \warning If this filter is used, then AutoRescaleOff() should be set on
+ * the reader to ensure that the reader does not rescale the data.
  */
 
 #ifndef vtkDICOMApplyRescale_h
@@ -98,6 +99,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMApplyRescale(const vtkDICOMApplyRescale&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMApplyRescale&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMApplyRescale(const vtkDICOMApplyRescale&) = delete;
+  void operator=(const vtkDICOMApplyRescale&) = delete;
 #else
   vtkDICOMApplyRescale(const vtkDICOMApplyRescale&);
   void operator=(const vtkDICOMApplyRescale&);

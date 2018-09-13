@@ -14,7 +14,7 @@
 #ifndef vtkDICOMCharacterSet_h
 #define vtkDICOMCharacterSet_h
 
-#include <vtkSystemIncludes.h>
+#include "vtkSystemIncludes.h"
 #include "vtkDICOMModule.h" // For export macro
 
 #include <string>
@@ -70,25 +70,28 @@ public:
     ISO_IR_126 = 14, // ISO-8859-7,  greek
     ISO_IR_138 = 15, // ISO-8859-8,  hebrew
     ISO_IR_148 = 16, // ISO-8859-9,  latin5, turkish
+    X_LATIN6   = 17, // ISO-8859-10, latin6, nordic
     ISO_IR_166 = 18, // ISO-8859-11, thai
-    X_LATIN7   = 19, // ISO-8859-13, baltic rim
+    X_LATIN7   = 19, // ISO-8859-13, latin7, baltic rim
+    X_LATIN8   = 20, // ISO-8859-14, latin8, celtic
     X_LATIN9   = 21, // ISO-8859-15, latin9, western europe
+    X_LATIN10  = 22, // ISO-8859-16, latin10, southeastern europe
     X_EUCKR    = 24, // euc-kr,      ISO_IR_149 without escape codes
     X_GB2312   = 25, // gb2312,      ISO_IR_58 without escape codes
     ISO_2022_IR_6   = 32, // US_ASCII
     ISO_2022_IR_13  = 33, // JIS X 0201,  japanese katakana
     ISO_2022_IR_87  = 34, // JIS X 0208,  japanese 94x94 primary
     ISO_2022_IR_159 = 36, // JIS X 0212,  japanese 94x94 secondary
-    ISO_2022_IR_100 = 41, // ISO-8859-1,  latin1, western europe
-    ISO_2022_IR_101 = 42, // ISO-8859-2,  latin2, central europe
-    ISO_2022_IR_109 = 43, // ISO-8859-3,  latin3, maltese
-    ISO_2022_IR_110 = 44, // ISO-8859-4,  latin4, baltic
-    ISO_2022_IR_144 = 45, // ISO-8859-5,  cyrillic
-    ISO_2022_IR_127 = 46, // ISO-8859-6,  arabic
-    ISO_2022_IR_126 = 47, // ISO-8859-7,  greek
-    ISO_2022_IR_138 = 48, // ISO-8859-8,  hebrew
-    ISO_2022_IR_148 = 49, // ISO-8859-9,  latin5, turkish
-    ISO_2022_IR_166 = 51, // ISO-8859-11, thai
+    ISO_2022_IR_100 = 40, // ISO-8859-1,  latin1, western europe
+    ISO_2022_IR_101 = 41, // ISO-8859-2,  latin2, central europe
+    ISO_2022_IR_109 = 42, // ISO-8859-3,  latin3, maltese
+    ISO_2022_IR_110 = 43, // ISO-8859-4,  latin4, baltic
+    ISO_2022_IR_144 = 44, // ISO-8859-5,  cyrillic
+    ISO_2022_IR_127 = 45, // ISO-8859-6,  arabic
+    ISO_2022_IR_126 = 46, // ISO-8859-7,  greek
+    ISO_2022_IR_138 = 47, // ISO-8859-8,  hebrew
+    ISO_2022_IR_148 = 48, // ISO-8859-9,  latin5, turkish
+    ISO_2022_IR_166 = 50, // ISO-8859-11, thai
     ISO_2022_IR_149 = 56, // the KS X 1001 part of ISO-2022-KR
     ISO_2022_IR_58  = 57, // the GB2312 part of ISO-2022-CN
     ISO_IR_192 = 64, // UTF-8,       unicode
@@ -106,6 +109,7 @@ public:
     X_CP1255   = 85, // cp1255,      hebrew
     X_CP1256   = 86, // cp1256,      arabic
     X_CP1257   = 87, // cp1257,      baltic rim
+    X_KOI8     = 90, // koi8,        cyrillic
     Unknown    = 255  // signifies unknown character set
   };
 
@@ -140,7 +144,7 @@ public:
   //! Set the character set to use if SpecificCharacterSet is missing.
   /*!
    *  Some DICOM files do not list a SpecificCharacterSet attribute, but
-   *  neverthless use a non-ASCII character encoding.  This method can be
+   *  nevertheless use a non-ASCII character encoding.  This method can be
    *  used to specify the character set in absence of SpecificCharacterSet.
    *  If SpecificCharacterSet is present, the default will not override it
    *  unless OverrideCharacterSet is true.
@@ -182,15 +186,47 @@ public:
   //@}
 
   //@{
+  //! Convert text from UTF-8 to this encoding.
+  /*!
+   *  Attempt to convert from UTF-8 to this character set.  Every
+   *  non-convertible character will be replaced with '?'.  If you
+   *  pass a non-null value for the "lp" parameter, it will return
+   *  the position in the input UTF-8 string where the first conversion
+   *  error occurred.  If a successful conversion was returned, then
+   *  lp will be set to the length of the input string.
+  */
+  std::string FromUTF8(const char *text, size_t l, size_t *lp=0) const;
+  std::string FromUTF8(const std::string& text) const {
+    return FromUTF8(text.data(), text.length()); }
+
   //! Convert text from this encoding to UTF-8.
   /*!
    *  This will convert text to UTF-8, which is generally a lossless
    *  process for western languages but not for the CJK languages.
    *  Characters that cannot be mapped to unicode, or whose place in
    *  unicode is not known, will be printed as unicode U+FFFD which
-   *  appears as a question mark in a diamond.
+   *  appears as a question mark in a diamond.  If you pass a non-null
+   *  value for the "lp" parameter, it will return the position in the
+   *  input string where the first conversion error occurred.  If a
+   *  successful conversion was returned, then lp will be set to the
+   *  length of the input string.
    */
+  std::string ToUTF8(const char *text, size_t l, size_t *lp=0) const;
+  std::string ToUTF8(const std::string& text) const {
+    return ToUTF8(text.data(), text.length()); }
+
+  //! Obsolete method for converting to UTF8.
   std::string ConvertToUTF8(const char *text, size_t l) const;
+
+  //! Convert text to UTF-8 that is safe to print to the console.
+  /*!
+   *  All control characters or unconvertible characters will be replaced
+   *  by four-byte octal codes, e.g. '\033'.  Backslashes will be replaced
+   *  by '\134' to avoid any potential ambiguity.
+   */
+  std::string ToSafeUTF8(const char *text, size_t l) const;
+  std::string ToSafeUTF8(const std::string& text) const {
+    return ToSafeUTF8(text.data(), text.length()); }
 
   //! Convert text into a form suitable for case-insensitive matching.
   /*!
@@ -202,6 +238,8 @@ public:
    *  and Cyrillic) and latin characters used in East Asian languages.
    */
   std::string CaseFoldedUTF8(const char *text, size_t l) const;
+  std::string CaseFoldedUTF8(const std::string& text) const {
+    return CaseFoldedUTF8(text.data(), text.length()); }
 
   //! Returns true if ISO 2022 escape codes are used.
   /*!
@@ -210,6 +248,11 @@ public:
    */
   bool IsISO2022() const {
     return ((this->Key & (ISO_2022 + ISO_2022 - 1)) == (this->Key | ISO_2022));
+  }
+
+  //! Returns true if this uses an ISO 8859 code page.
+  bool IsISO8859() const {
+    return (this->Key >= ISO_IR_100 && this->Key <= X_LATIN10);
   }
 
   //! Check for bidirectional character sets.
@@ -253,7 +296,30 @@ public:
   //@}
 
 private:
-  void ISO2022ToUTF8(const char *text, size_t l, std::string *s) const;
+  size_t AnyToUTF8(const char *t, size_t l, std::string *s, int m) const;
+  size_t UTF8ToSingleByte(const char *t, size_t l, std::string *s) const;
+  size_t SingleByteToUTF8(const char *t, size_t l, std::string *s, int m) const;
+  size_t ISO8859ToUTF8(const char *t, size_t l, std::string *s, int) const;
+  size_t UTF8ToISO2022(const char *t, size_t l, std::string *s) const;
+  size_t ISO2022ToUTF8(const char *t, size_t l, std::string *s, int m) const;
+  static size_t UTF8ToEUCKR(const char *t, size_t l, std::string *s);
+  static size_t EUCKRToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToGB2312(const char *t, size_t l, std::string *s);
+  static size_t GB2312ToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToGB18030(const char *t, size_t l, std::string *s);
+  static size_t GB18030ToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToGBK(const char *t, size_t l, std::string *s);
+  static size_t GBKToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToBig5(const char *t, size_t l, std::string *s);
+  static size_t Big5ToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToEUCJP(const char *t, size_t l, std::string *s);
+  static size_t EUCJPToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToSJIS(const char *t, size_t l, std::string *s);
+  static size_t SJISToUTF8(const char *t, size_t l, std::string *s, int m);
+  static size_t UTF8ToJISX(
+    int charset, const char *t, size_t l, std::string *s);
+  static size_t JISXToUTF8(
+    int csGL, int csGR, const char *t, size_t l, std::string *s, int m);
   static unsigned char KeyFromString(const char *name, size_t nl);
 
   unsigned char Key;
@@ -266,6 +332,10 @@ private:
 
   static unsigned char GlobalDefault;
   static bool GlobalOverride;
+
+public:
+  static const unsigned short *Table[256];
+  static const unsigned short *Reverse[256];
 };
 
 VTKDICOM_EXPORT ostream& operator<<(ostream& o, const vtkDICOMCharacterSet& a);

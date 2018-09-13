@@ -26,7 +26,7 @@
 #ifndef vtkDICOMWriter_h
 #define vtkDICOMWriter_h
 
-#include <vtkImageWriter.h>
+#include "vtkImageWriter.h"
 #include "vtkDICOMModule.h" // For export macro
 
 class vtkMatrix4x4;
@@ -212,6 +212,21 @@ public:
   //@}
 
   //@{
+  //! Provide an overlay to be written with the data.
+  void SetOverlayInputData(vtkImageData *data);
+  void SetOverlayInputConnection(vtkAlgorithmOutput *data);
+  vtkImageData *GetOverlayInput();
+  //@}
+
+  //@{
+  //! Set the overlay type.
+  vtkSetMacro(OverlayType, int);
+  vtkGetMacro(OverlayType, int);
+  void SetOverlayTypeToGraphics() { this->SetOverlayType(0); }
+  void SetOverlayTypeToROI() { this->SetOverlayType(1); }
+  //@}
+
+  //@{
   //! Write the file to disk.
 #ifdef VTK_OVERRIDE
   void Write() VTK_OVERRIDE;
@@ -233,12 +248,20 @@ protected:
   //! Generate the meta data to be written for the files.
   virtual int GenerateMetaData(vtkInformation *info);
 
+  //! Generate the overlays.
+  virtual void GenerateOverlays(int minFileIdx, int maxFileIdx,
+                                const int extent[4]);
+
   //! The main execution method, which writes the file.
 #ifdef VTK_OVERRIDE
+  int FillInputPortInformation(int port, vtkInformation *info) VTK_OVERRIDE;
+
   int RequestData(vtkInformation *request,
                   vtkInformationVector** inputVector,
                   vtkInformationVector* outputVector) VTK_OVERRIDE;
 #else
+  int FillInputPortInformation(int port, vtkInformation *info);
+
   int RequestData(vtkInformation *request,
                   vtkInformationVector** inputVector,
                   vtkInformationVector* outputVector);
@@ -276,6 +299,9 @@ protected:
   //! The DICOM Image Type.
   char *ImageType;
 
+  //! The overlay type.
+  int OverlayType;
+
   //! The row order to use when storing the data in memory.
   int MemoryRowOrder;
 
@@ -289,6 +315,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMWriter(const vtkDICOMWriter&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMWriter&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMWriter(const vtkDICOMWriter&) = delete;
+  void operator=(const vtkDICOMWriter&) = delete;
 #else
   vtkDICOMWriter(const vtkDICOMWriter&);
   void operator=(const vtkDICOMWriter&);

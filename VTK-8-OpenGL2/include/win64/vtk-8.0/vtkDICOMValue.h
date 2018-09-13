@@ -14,7 +14,7 @@
 #ifndef vtkDICOMValue_h
 #define vtkDICOMValue_h
 
-#include <vtkSystemIncludes.h>
+#include "vtkSystemIncludes.h"
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMVR.h"
 #include "vtkDICOMTag.h"
@@ -144,6 +144,19 @@ public:
 
   //! Destructor releases the internal data array.
   ~vtkDICOMValue() { this->Clear(); }
+  //@}
+
+  //@{
+  //! Create a value from a UTF8-encoded string.
+  /*!
+   *  This will convert a UTF-8 string to the target encoding and store
+   *  the result in a new value.  If the target encoding is ISO 2022,
+   *  then escape codes will be added before and after delimeters as
+   *  necessary (the delimiters are 'backslash' for multi-valued VRs,
+   *  and '^', '=' for PN).
+   */
+  static vtkDICOMValue FromUTF8String(
+    vtkDICOMVR vr, vtkDICOMCharacterSet cs, const std::string& v);
   //@}
 
   //@{
@@ -294,7 +307,7 @@ public:
    *  Allocate an array of the specified size (number of elements)
    *  within the value object.  This method will not do any checks
    *  to ensure that the data type matches the VR.  It is meant to
-   *  be an efficent way for the parser to allocate a value so that
+   *  be an efficient way for the parser to allocate a value so that
    *  the value's contents can be read in directly from a file.
    */
   char *AllocateCharData(vtkDICOMVR vr, size_t vn);
@@ -338,6 +351,15 @@ public:
    *  to UTF-8.
    */
   void AppendValueToUTF8String(std::string &str, size_t i) const;
+
+  //@{
+  //! Append value "i" to the supplied UTF8 string for safe printing.
+  /*
+   *  This method will check for control characters or unconvertible
+   *  characters in the value, and will replace them with four-byte
+   *  codes of the form '\ooo' where 'o' is an octal digit.
+   */
+  void AppendValueToSafeUTF8String(std::string &str, size_t i) const;
 
   //! Append value "i" to the supplied string.
   /*!
@@ -441,6 +463,17 @@ private:
   void CreateValueWithSpecificCharacterSet(
     vtkDICOMVR vr, vtkDICOMCharacterSet cs, const char *data, size_t l);
 
+  //! Create a value with conversion from UTF8 to the given encoding.
+  /*!
+   *  Given a UTF8 input string, this method will attempt to convert
+   *  it to the specified character set and store it in the value.
+   *  The return value is the number of input characters that were
+   *  successfully converted before the first error (it will be equal
+   *  to the length of the input string if no errors occurred);
+   */
+  size_t CreateValueFromUTF8(
+    vtkDICOMVR vr, vtkDICOMCharacterSet cs, const char *data, size_t l);
+
   //! A simple string compare with wildcards "*" and "?".
   static bool PatternMatches(
     const char *pattern, const char *pe, const char *val, const char *ve);
@@ -458,10 +491,22 @@ private:
   static size_t NormalizeDateTime(
     const char *input, char output[22], vtkDICOMVR vr);
 
-  //! Do matching on names, after notmalization.
+  //! Do case-insensitive matching on names, after normalization.
+  /*!
+   *  This will check to see if a given wildcard pattern (using "*" and "?")
+   *  matches the given patient name.  It expects "^" to be used as the
+   *  separator between name segments.  Prior to comparison, the names are
+   *  normalized to five "^"-separated segments.
+   */
   static bool PatternMatchesPersonName(const char *pattern, const char *val);
 
-  //! Normalize a person's name.
+  //! Normalize a person's name for comparison.
+  /*!
+   *  The normalization involves expanding the name into 5 distinct segments
+   *  separated by "^".  If the "isquery" parameter is set, then empty
+   *  segments will be filled with "*" to allow them to match non-empty
+   *  segments.
+   */
   static void NormalizePersonName(
     const char *input, char output[256], bool isquery=false);
 

@@ -14,8 +14,8 @@
 #ifndef vtkDICOMParser_h
 #define vtkDICOMParser_h
 
-#include <vtkObject.h>
-#include <vtkStdString.h> // For std::string
+#include "vtkObject.h"
+#include "vtkStdString.h" // For std::string
 #include "vtkDICOMModule.h" // For export macro
 #include "vtkDICOMCharacterSet.h" // For character sets
 
@@ -71,7 +71,7 @@ public:
   //! Set the character set to use if SpecificCharacterSet is missing.
   /*!
    *  Some DICOM files do not list a SpecificCharacterSet attribute, but
-   *  neverthless use a non-ASCII character encoding.  This method can be
+   *  nevertheless use a non-ASCII character encoding.  This method can be
    *  used to specify the character set in absence of SpecificCharacterSet.
    *  If SpecificCharacterSet is present, the default will not override it
    *  unless OverrideCharacterSet is true.
@@ -184,6 +184,22 @@ protected:
   virtual bool FillBuffer(
     const unsigned char* &cp, const unsigned char* &ep);
 
+  //! Internal method to advance the buffer to a new file position.
+  /*!
+   *  This will move to a new position within the file.
+   */
+  virtual bool SeekBuffer(
+    const unsigned char* &cp, const unsigned char* &ep, vtkTypeInt64 offset);
+
+  //! Internal method for skipping over a value.
+  /*!
+   *  This is for skipping over bulk data (such as PixelData).
+   *  If vl is 0xffffffff, then the value will be assumed to be
+   *  delimited (e.g. encapsulated pixel data).
+   */
+  virtual bool SkipValue(
+    const unsigned char* &cp, const unsigned char* &ep, unsigned int vl);
+
   //! Get the bytes remaining in the file.
   virtual vtkTypeInt64 GetBytesRemaining(
     const unsigned char *cp, const unsigned char *ep);
@@ -240,6 +256,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMParser(const vtkDICOMParser&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMParser&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMParser(const vtkDICOMParser&) = delete;
+  void operator=(const vtkDICOMParser&) = delete;
 #else
   vtkDICOMParser(const vtkDICOMParser&);
   void operator=(const vtkDICOMParser&);

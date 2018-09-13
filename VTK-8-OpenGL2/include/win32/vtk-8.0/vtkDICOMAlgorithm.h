@@ -24,7 +24,7 @@
 #ifndef vtkDICOMAlgorithm_h
 #define vtkDICOMAlgorithm_h
 
-#include <vtkThreadedImageAlgorithm.h>
+#include "vtkThreadedImageAlgorithm.h"
 #include "vtkDICOMModule.h" // For export macro
 
 class vtkLookupTable;
@@ -117,6 +117,9 @@ private:
 #ifdef VTK_DELETE_FUNCTION
   vtkDICOMAlgorithm(const vtkDICOMAlgorithm&) VTK_DELETE_FUNCTION;
   void operator=(const vtkDICOMAlgorithm&) VTK_DELETE_FUNCTION;
+#elif __cplusplus >= 201103L
+  vtkDICOMAlgorithm(const vtkDICOMAlgorithm&) = delete;
+  void operator=(const vtkDICOMAlgorithm&) = delete;
 #else
   vtkDICOMAlgorithm(const vtkDICOMAlgorithm&);
   void operator=(const vtkDICOMAlgorithm&);
